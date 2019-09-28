@@ -7,7 +7,7 @@ import { mergeRefs } from "reakit-utils/mergeRefs";
 import { useAllCallbacks } from "reakit-utils/useAllCallbacks";
 import { usePipe } from "reakit-utils/usePipe";
 import { HiddenOptions, HiddenHTMLProps, useHidden } from "../Hidden/Hidden";
-import { Portal } from "../Portal/Portal";
+import { Portal, PortalContext } from "../Portal/Portal";
 import { useDisclosuresRef } from "./__utils/useDisclosuresRef";
 import { usePreventBodyScroll } from "./__utils/usePreventBodyScroll";
 import { useFocusOnShow } from "./__utils/useFocusOnShow";
@@ -163,7 +163,13 @@ export const useDialog = createHook<DialogOptions, DialogHTMLProps>({
     const wrapChildren = React.useCallback(
       (children: React.ReactNode) => {
         if (options.unstable_portal) {
-          return <Portal>{wrap(children)}</Portal>;
+          return (
+            <Portal>
+              <PortalContext.Provider value={dialog.current}>
+                {wrap(children)}
+              </PortalContext.Provider>
+            </Portal>
+          );
         }
         return wrap(children);
       },
@@ -174,7 +180,7 @@ export const useDialog = createHook<DialogOptions, DialogHTMLProps>({
       ref: mergeRefs(dialog, htmlRef),
       role: "dialog",
       tabIndex: -1,
-      "aria-modal": options.modal,
+      "aria-modal": options.modal ? true : undefined,
       "data-dialog": true,
       onKeyDown: useAllCallbacks(onKeyDown, htmlOnKeyDown),
       unstable_wrap: usePipe(wrapChildren, htmlWrap),
