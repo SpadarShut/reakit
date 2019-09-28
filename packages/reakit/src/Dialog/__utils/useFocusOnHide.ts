@@ -20,6 +20,7 @@ export function useFocusOnHide(
     if (
       document.activeElement &&
       dialog &&
+      // !dialogContains(dialog, document.activeElement) &&
       !dialog.contains(document.activeElement) &&
       (isTabbable(document.activeElement) ||
         document.activeElement.getAttribute("data-dialog") === "true")
